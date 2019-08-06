@@ -23,7 +23,7 @@ var fetchProfileAndWriteToFile = function(readFilePath, writeFilePath) {
       console.log('Oops, caught an error: ', err.message);
     })
     .then(function(userName) {
-      if(!userName) {
+      if (!userName) {
         throw new Error('No user found!');
       } else {
         return userName;
@@ -36,8 +36,8 @@ var fetchProfileAndWriteToFile = function(readFilePath, writeFilePath) {
       console.log('Oops, caught an error: ', err.message);
     })
     .then(function(gitHubBody) {
-        console.log('hey we got here');
-        return fs.writeFileAsync(writeFilePath, JSON.stringify(gitHubBody));
+      console.log('hey we got here');
+      return fs.writeFileAsync(writeFilePath, JSON.stringify(gitHubBody));
     });
 };
 
