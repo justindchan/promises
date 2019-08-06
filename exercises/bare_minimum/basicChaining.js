@@ -10,14 +10,50 @@
 
 var fs = require('fs');
 var Promise = require('bluebird');
+var gh = require('./promisification.js');
+var pc = require('./promiseConstructor.js');
+Promise.promisifyAll(fs);
 
 
 
 var fetchProfileAndWriteToFile = function(readFilePath, writeFilePath) {
   // TODO
+  return pc.pluckFirstLineFromFileAsync(readFilePath)
+    .catch(function(err) {
+      console.log('Oops, caught an error: ', err.message);
+    })
+    .then(function(userName) {
+      if(!userName) {
+        throw new Error('No user found!');
+      } else {
+        return userName;
+      }
+    })
+    .then(function(userName) {
+      return gh.getGitHubProfileAsync(userName);
+    })
+    .catch(function(err) {
+      console.log('Oops, caught an error: ', err.message);
+    })
+    .then(function(gitHubBody) {
+        console.log('hey we got here');
+        return fs.writeFileAsync(writeFilePath, JSON.stringify(gitHubBody));
+    });
 };
 
 // Export these functions so we can test them
 module.exports = {
   fetchProfileAndWriteToFile: fetchProfileAndWriteToFile
 };
+
+// Promisification: gh
+// module.exports = {
+//   getGitHubProfileAsync: getGitHubProfileAsync,
+//   generateRandomTokenAsync: generateRandomTokenAsync,
+//   readFileAndMakeItFunnyAsync: readFileAndMakeItFunnyAsync
+// };
+// promiseConstructor: pc
+// module.exports = {
+//   getStatusCodeAsync: getStatusCodeAsync,
+//   pluckFirstLineFromFileAsync: pluckFirstLineFromFileAsync
+// };
